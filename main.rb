@@ -1,19 +1,44 @@
 # 登場人物
 # - ユーザー
+#   - 名前
+#   - 所持金
 # - 商品
 # - カート
 
 # 出来ること
-# 1 商品を追加出来る
+# 1 ユーザー情報を定義
+#   - カートを紐づける
+# 2 商品を追加出来る
 #   - どの商品か？
 #   - 個数が何個か？
-# 2 カートの情報が見れる
+# 3 カートの情報が見れる
 #   - どの商品が入ってるか
 #   - 合計金額
+# 4 - 買い物の可否
 
 require 'pry'
 
 class User
+  attr_accessor :name, :money, :cart
+
+  def initialize(name, money)
+    @name = name
+    @money = money
+    @cart = Cart.new
+  end
+
+  def check_out?
+    @money >= @cart.total_price
+  end
+
+  def shopping_result
+    puts "所持金#{@money}円"
+    if check_out?
+      puts 'お買い上げありがとうございます'
+    else
+      puts '所持金が足りません'
+    end
+  end
 end
 
 class Product
@@ -26,7 +51,10 @@ class Product
 end
 
 class Cart
-  INITIAL_PRICE = 0
+  INITIAL_PRICE = 0.freeze
+
+  attr_reader :total_price
+  attr_writer
 
   def initialize
     @orders = []
@@ -50,8 +78,12 @@ end
 
 product_1 = Product.new('チェリー本', 1000)
 product_2 = Product.new('ワンピース', 1000)
-cart = Cart.new
 
-cart.add_product(product_1, 2)
-cart.add_product(product_2, 10)
-cart.disp_cart
+user = User.new('あじー', 12000)
+
+# レシーバー . メソッド
+user.cart.add_product(product_1, 2)
+user.cart.add_product(product_2, 10)
+
+user.cart.disp_cart
+user.shopping_result
